@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center"><img src="https://github.com/stanfordnlp/stanza/raw/dev/images/stanza-logo.png" height="100px"/></div>
 
 <h2 align="center">Stanza: A Python NLP Library for Many Human Languages</h2>
@@ -191,3 +192,7 @@ For detailed step-by-step guidance on how to train and evaluate your own models,
 ## LICENSE
 
 Stanza is released under the Apache License, Version 2.0. See the [LICENSE](https://github.com/stanfordnlp/stanza/blob/master/LICENSE) file for more details.
+=======
+# CHILDES-Parser
+Training of a Dependency Parser on golden UD annotation on English CHILDES 
+>>>>>>> a5749fec234408cdd3a6ba05415904bb9365eb57
