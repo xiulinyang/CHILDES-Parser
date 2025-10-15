@@ -22,7 +22,8 @@ Create also the output folder for your trained models **save_models**.
 
 In order to load the trained model and evaluate it, I use this:
 
-```stanza_childes_en = stanza.Pipeline(
+```
+stanza_childes_en = stanza.Pipeline(
         lang='en',
         processors='tokenize,pos,depparse',
         use_gpu=True,
