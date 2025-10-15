@@ -27,7 +27,8 @@ In order to load the trained model and evaluate it, I use this:
         processors='tokenize,pos,depparse',
         use_gpu=True,
         pos_model_path='./saved_models/pos/en_childes_charlm_tagger.pt',
-        depparse_model_path='./saved_models/depparse/en_childes_charlm_parser.pt')```
+        depparse_model_path='./saved_models/depparse/en_childes_charlm_parser.pt')
+```
 
 
 2. Test the accuracy of Stanza Dependency Parser off the shelf trained on combined UD. 
