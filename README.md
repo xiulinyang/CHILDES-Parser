@@ -41,6 +41,28 @@ stanza_childes_en = stanza.Pipeline(
 
 3. Test a Supar model trained on Combined English Dataset
 
+
+I try two models (biaffine and crf):
+
+
+```
+python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model -f char  \
+    --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
+    --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
+    --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \
+    --embed glove-6b-100  \
+    --mbr  \
+    --proj
+```
+
+```
+python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model -f char  \
+    --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
+    --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
+    --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \
+    --embed glove-6b-100   
+```
+
 4. Test a Supar model trained on first Combined English + CHILDES(silver) + CHILDES(gold)
 
 5. Test a Supar model trained on CHILDES (gold)
