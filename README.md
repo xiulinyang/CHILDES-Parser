@@ -74,7 +74,9 @@ I train on the CHILDES silver datasets (the original silver .connlu files can be
 I use the *--checkpoint* argument while running the command from the terminal. As indicated by the code snipped below:
 
 ```
-python3 -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p /Users/frapadovani/Desktop/stanza/parser/biaffine_combined/model_biaffine_combined -f char --checkpoint \
+python3 -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en \
+-p /Users/frapadovani/Desktop/stanza/parser/biaffine_combined/model_biaffine_combined \
+-f char --checkpoint \
     --train ./silver_files_merged/childes_silver_train.conllu  \
     --dev ./silver_files_merged/childes_silver_dev.conllu  \
     --test ./silver_files_merged/childes_silver_test.conllu \
@@ -97,7 +99,8 @@ python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model_crf_chi
 ```
 
 ```
-python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model_biaffine_childes -f char  \
+python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en \
+-p model_biaffine_childes -f char  \
     --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
     --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
     --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \
