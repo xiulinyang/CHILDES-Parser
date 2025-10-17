@@ -38,13 +38,16 @@ stanza_childes_en = stanza.Pipeline(
 
 
 ## SUPAR 
+The folder **parser** contains the code to train Supar parsers from the original repository + additional folders and notebooks that I added myself.
 
-3. Test a Supar model trained on Combined English Dataset
+In *conllu_files_original* one can find the .conllu files of the different annotated resources [GUM, EWT, GumReddit, Pronouns, PUD] For the first three, the train/dev/test splits exixt, instead for Pronouns and PUD it's available only a test set. I use the code in  *merge_conllu_files.ipynb* to generate splits also for the two files (with a proportion of 80/10/10) and also to finally combine the data in a unique train/dev/test triplets, that you can find in *conllu_files_merged*. I then use these files as input for the training of the parser.
 
-I try two models (biaffine and crf):
+3. Test a Supar model trained on Combined English Dataset (to be compared with the Stanza off-the-shelf)
+
+I try two models (crf and biaffine):
 
 ```
-python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model -f char  \
+python3 -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model_crf_combined -f char  \
     --train ./conllu_files_merged/combined_train.conllu  \
     --dev ./conllu_files_merged/combined_dev.conllu  \
     --test ./conllu_files_merged/combined_test.conllu  \
@@ -52,24 +55,39 @@ python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model -f char
     --mbr  \
     --proj
 ```
+The trained model is saved in the **parser/crf_combined** folder.
 
 ```
-python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model -f char  \
-    --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
-    --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
-    --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \
+python3 -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model_biaffine_combined -f char  \
+    --train ./conllu_files_merged/combined_train.conllu  \
+    --dev ./conllu_files_merged/combined_dev.conllu  \
+    --test ./conllu_files_merged/combined_test.conllu \
     --embed glove-6b-100   
 ```
+The trained model is saved in the **parser/biaffine_combined** folder.
 
 
 4. Test a Supar model trained on first Combined English + CHILDES(silver) + CHILDES(gold)
 
-5. Test a Supar model trained on CHILDES (gold)
-
-I try two models (biaffine and crf):
+I take the trained model on teh Combined set of English UD and I use it as the input for the next phase of training.
+I train on the CHILDES silver datasets (the original silver .connlu files can be found in the **UD_CHILDES_silver** folder); I generate the train/dev/test split, the code can be found in the */parser/merge_conllu_files.ipynb* notebook and the merged files in the **parser/silver_files_merged** folder.
+I use the *--checkpoint* argument while running the command from the terminal. As indicated by the code snipped below:
 
 ```
-python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model -f char  \
+python3 -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p /Users/frapadovani/Desktop/stanza/parser/biaffine_combined/model_biaffine_combined -f char --checkpoint \
+    --train ./silver_files_merged/childes_silver_train.conllu  \
+    --dev ./silver_files_merged/childes_silver_dev.conllu  \
+    --test ./silver_files_merged/childes_silver_test.conllu \
+    --embed glove-6b-100 
+```
+
+
+5. Test a Supar model trained on CHILDES (gold)
+
+I try two models (crf and biaffine):
+
+```
+python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model_crf_childes -f char  \
     --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
     --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
     --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \
@@ -79,7 +97,7 @@ python -u -m supar.cmds.dep.crf2o train -b -d 0 -c dep-crf2o-en -p model -f char
 ```
 
 ```
-python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model -f char  \
+python -u -m supar.cmds.dep.biaffine train -b -d 0 -c dep-biaffine-en -p model_biaffine_childes -f char  \
     --train ./stanza/UD_English-CHILDES/en_childes-ud-train.conllu  \
     --dev ./stanza/UD_English-CHILDES/en_childes-ud-dev.conllu  \
     --test ./stanza/UD_English-CHILDES/en_childes-ud-test.conllu  \

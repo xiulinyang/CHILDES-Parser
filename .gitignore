@@ -180,3 +180,4 @@ _site/
 
 # symlink / directory for data files
 extern_data
+supar_env/
