@@ -123,7 +123,7 @@ def has_space_after_no(piece):
 def remove_space_after_no(piece, fail_if_missing=True):
     """
     Removes a SpaceAfter=No annotation from a single piece of a single word.
-    In other words, given a list of conll lines, first call split("\t"), then call this on the -1 column
+    In other words, given a list of conll lines, first call split(), then call this on the -1 column
     """
     # |SpaceAfter is in UD_Romanian-Nonstandard... seems fitting
     if piece == "SpaceAfter=No" or piece == "|SpaceAfter=No":
@@ -185,9 +185,9 @@ def augment_arabic_padt(sents, ratio=0.05):
             len(sentence[-1].split()[1]) == 1):
             new_sent = list(sentence)
             new_sent[text_line] = new_sent[text_line][:-1] + ' ' + new_sent[text_line][-1]
-            pieces = sentence[-2].split("\t")
+            pieces = sentence[-2].split()
             pieces[-1] = remove_space_after_no(pieces[-1])
-            new_sent[-2] = "\t".join(pieces)
+            new_sent[-2] = " ".join(pieces)
             assert new_sent != sentence
             new_sents.append(new_sent)
     return sents + new_sents
@@ -232,7 +232,7 @@ def augment_telugu(sents):
                 if idx < 4:
                     # skip sent_id, text, transliteration, and the first word
                     continue
-                if word.split("\t")[1] == ',':
+                if word.split()[1] == ',':
                     new_sentence[idx-1] = new_sentence[idx-1] + "|SpaceAfter=No"
                     break
             new_sents.append(new_sentence)
@@ -280,11 +280,11 @@ def augment_comma_separations(sents, ratio=0.03):
                 if word.startswith("#"):
                     continue
                 # find() doesn't work because we wind up finding substrings
-                if word.split("\t")[1] != match.group(1):
+                if word.split()[1] != match.group(1):
                     continue
-                if sentence[idx+1].split("\t")[1] != ',':
+                if sentence[idx+1].split()[1] != ',':
                     continue
-                if sentence[idx+2].split("\t")[1] != match.group(2):
+                if sentence[idx+2].split()[1] != match.group(2):
                     continue
                 break
             if idx == len(sentence) - 1:
@@ -293,10 +293,10 @@ def augment_comma_separations(sents, ratio=0.03):
                 continue
             # now idx+1 should be the line with the comma in it
             comma = sentence[idx+1]
-            pieces = comma.split("\t")
+            pieces = comma.split()
             assert pieces[1] == ','
             pieces[-1] = add_space_after_no(pieces[-1])
-            comma = "\t".join(pieces)
+            comma = " ".join(pieces)
             new_sent = sentence[:idx+1] + [comma] + sentence[idx+2:]
 
             text_offset = sentence[text_idx].find(match.group(1) + ", " + match.group(2))
@@ -337,11 +337,11 @@ def augment_move_comma(sents, ratio=0.02):
                 continue
             if word_idx == 0 or word_idx >= len(sentence) - 2:
                 continue
-            pieces = word.split("\t")
+            pieces = word.split()
             if pieces[1] == ',' and not has_space_after_no(pieces[-1]):
                 # found a comma with a space after it
                 prev_word = sentence[word_idx-1]
-                if not has_space_after_no(prev_word.split("\t")[-1]):
+                if not has_space_after_no(prev_word.split()[-1]):
                     # unfortunately, the previous word also had a
                     # space after it.  does not fit what we are
                     # looking for
@@ -349,9 +349,9 @@ def augment_move_comma(sents, ratio=0.02):
                 # also, want to skip instances near MWT or copy nodes,
                 # since those are harder to rearrange
                 next_word = sentence[word_idx+1]
-                if MWT_OR_COPY_RE.match(next_word.split("\t")[0]):
+                if MWT_OR_COPY_RE.match(next_word.split()[0]):
                     continue
-                if MWT_OR_COPY_RE.match(prev_word.split("\t")[0]):
+                if MWT_OR_COPY_RE.match(prev_word.split()[0]):
                     continue
                 # at this point, the previous word has no space and the comma does
                 found = True
@@ -363,16 +363,16 @@ def augment_move_comma(sents, ratio=0.02):
 
         new_sentence = list(sentence)
 
-        pieces = new_sentence[word_idx].split("\t")
+        pieces = new_sentence[word_idx].split()
         pieces[-1] = add_space_after_no(pieces[-1])
-        new_sentence[word_idx] = "\t".join(pieces)
+        new_sentence[word_idx] = " ".join(pieces)
 
-        pieces = new_sentence[word_idx-1].split("\t")
+        pieces = new_sentence[word_idx-1].split()
         prev_word = pieces[1]
         pieces[-1] = remove_space_after_no(pieces[-1])
-        new_sentence[word_idx-1] = "\t".join(pieces)
+        new_sentence[word_idx-1] = " ".join(pieces)
 
-        next_word = new_sentence[word_idx+1].split("\t")[1]
+        next_word = new_sentence[word_idx+1].split()[1]
 
         for text_idx, text_line in enumerate(sentence):
             # look for the line that starts with "# text".
@@ -432,9 +432,9 @@ def augment_apos(sents):
             elif line.startswith("#"):
                 new_sent.append(line)
             else:
-                pieces = line.split("\t")
+                pieces = line.split()
                 pieces[1] = pieces[1].replace("'", "’")
-                new_sent.append("\t".join(pieces))
+                new_sent.append(" ".join(pieces))
         new_sents.append(new_sent)
 
     return new_sents
@@ -449,7 +449,7 @@ def augment_ellipses(sents):
         for line in sent:
             if line.startswith("#"):
                 continue
-            pieces = line.split("\t")
+            pieces = line.split()
             if pieces[1] == '...':
                 has_ellipses = True
             elif pieces[1] == '…':
@@ -471,11 +471,11 @@ def augment_ellipses(sents):
             if line.startswith("#"):
                 new_sent.append(line)
             else:
-                pieces = line.split("\t")
+                pieces = line.split()
                 if pieces[1] == '...':
                     pieces[1] = '…'
                     found = True
-                new_sent.append("\t".join(pieces))
+                new_sent.append(" ".join(pieces))
         new_sents.append(new_sent)
         if found:
             num_updated = num_updated + 1
@@ -510,7 +510,7 @@ def augment_quotes(sents, ratio=0.15):
         # this is for convenience - otherwise we need to figure out which pairs go together
         count_quotes = sum(1 for x in sent
                            if (not x.startswith("#") and
-                               x.split("\t")[1] in QUOTES))
+                               x.split()[1] in QUOTES))
         if count_quotes != 2:
             new_sents.append(sent)
             continue
@@ -527,7 +527,7 @@ def augment_quotes(sents, ratio=0.15):
             if line.startswith("#"):
                 new_sent.append(line)
                 continue
-            pieces = line.split("\t")
+            pieces = line.split()
             if pieces[1] in QUOTES:
                 if saw_start:
                     # Note that we don't change the lemma.  Presumably it's
@@ -536,7 +536,7 @@ def augment_quotes(sents, ratio=0.15):
                 else:
                     pieces[1] = start_quote
                     saw_start = True
-                new_sent.append("\t".join(pieces))
+                new_sent.append(" ".join(pieces))
             else:
                 new_sent.append(line)
 
@@ -572,11 +572,11 @@ def change_indices(line, delta):
     if line.startswith("#"):
         return line
 
-    pieces = line.split("\t")
+    pieces = line.split()
     if MWT_RE.match(pieces[0]):
         indices = pieces[0].split("-")
         pieces[0] = "%d-%d" % (int(indices[0]) + delta, int(indices[1]) + delta)
-        line = "\t".join(pieces)
+        line = " ".join(pieces)
         return line
 
     if MWT_OR_COPY_RE.match(pieces[0]):
@@ -597,7 +597,7 @@ def change_indices(line, delta):
             raise NotImplementedError("Need to handle multiple additional deps:\n%s" % line)
         if int(dep_pieces[0]) != 0:
             pieces[8] = str(int(dep_pieces[0]) + delta) + ":" + dep_pieces[1]
-    line = "\t".join(pieces)
+    line = " ".join(pieces)
     return line
 
 def augment_initial_punct(sents, ratio=0.20):
@@ -625,7 +625,7 @@ def augment_initial_punct(sents, ratio=0.20):
             break
         if idx >= len(sent) - 1:
             raise ValueError("Unexpectedly an entire sentence is comments")
-        pieces = line.split("\t")
+        pieces = line.split()
         if pieces[1] != '¿':
             continue
         if has_space_after_no(pieces[-1]):
@@ -673,12 +673,12 @@ def augment_brackets(sents, ratio=0.1):
         for idx, line in enumerate(new_sent):
             if line.startswith("#"):
                 continue
-            pieces = line.split("\t")
+            pieces = line.split()
             if pieces[1] == '(':
                 pieces[1] = '['
             elif pieces[1] == ')':
                 pieces[1] = ']'
-            new_sent[idx] = "\t".join(pieces)
+            new_sent[idx] = " ".join(pieces)
         new_sents.append(new_sent)
 
     if len(new_sents) > 0:
@@ -732,14 +732,14 @@ def remove_spaces_from_sentences(sents):
             if word.startswith("#"):
                 new_sentence.append(word)
                 continue
-            pieces = word.split("\t")
+            pieces = word.split()
             if pieces[-1] == "_":
                 pieces[-1] = "SpaceAfter=No"
             elif pieces[-1].find("SpaceAfter=No") >= 0:
                 pass
             else:
                 raise ValueError("oops")
-            word = "\t".join(pieces)
+            word = " ".join(pieces)
             new_sentence.append(word)
         new_sents.append(new_sentence)
     return new_sents
@@ -863,7 +863,7 @@ def add_english_sentence_final_punctuation(handparsed_sentences):
         for line in sent:
             if line.startswith("#"):
                 continue
-            pieces = line.split("\t")
+            pieces = line.split()
             if MWT_OR_COPY_RE.match(pieces[0]):
                 continue
             if pieces[6] == '0':
@@ -872,10 +872,10 @@ def add_english_sentence_final_punctuation(handparsed_sentences):
             last_punct = pieces[3] == 'PUNCT'
         if not last_punct:
             new_sent = list(sent)
-            pieces = new_sent[-1].split("\t")
+            pieces = new_sent[-1].split()
             pieces[-1] = add_space_after_no(pieces[-1])
-            new_sent[-1] = "\t".join(pieces)
-            new_sent.append("%d\t.\t.\tPUNCT\t.\t_\t%s\tpunct\t%s:punct\t_" % (max_id+1, root_id, root_id))
+            new_sent[-1] = " ".join(pieces)
+            new_sent.append("%d . . PUNCT . _ %s punct %s:punct _" % (max_id+1, root_id, root_id))
             new_sents.append(new_sent)
         else:
             new_sents.append(sent)
@@ -977,9 +977,9 @@ def strip_column(sents, column):
             if word.startswith("#"):
                 new_sent.append(word)
                 continue
-            pieces = word.split("\t")
+            pieces = word.split()
             pieces[column] = "_"
-            new_sent.append("\t".join(pieces))
+            new_sent.append(" ".join(pieces))
         new_sents.append(new_sent)
     return new_sents
 
