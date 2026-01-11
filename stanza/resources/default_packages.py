@@ -563,7 +563,7 @@ TRANSFORMERS = {
     #  electra-base:   96.21 95.94
     #  electra-large:  96.40 96.32
     #
-    "en": "google/electra-large-discriminator",
+    "en": "FacebookAI/roberta-large",
 
     # TODO need to test, possibly compare with others
     "es": "bertin-project/bertin-roberta-base-spanish",
