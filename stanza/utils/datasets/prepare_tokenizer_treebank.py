@@ -123,7 +123,7 @@ def has_space_after_no(piece):
 def remove_space_after_no(piece, fail_if_missing=True):
     """
     Removes a SpaceAfter=No annotation from a single piece of a single word.
-    In other words, given a list of conll lines, first call split(), then call this on the -1 column
+    In other words, given a list of conll lines, first call split(" "), then call this on the -1 column
     """
     # |SpaceAfter is in UD_Romanian-Nonstandard... seems fitting
     if piece == "SpaceAfter=No" or piece == "|SpaceAfter=No":
@@ -307,7 +307,7 @@ def augment_comma_separations(sents, ratio=0.03):
             new_sents.append(new_sent)
 
     print("Added %d new sentences with asdf, zzzz -> asdf,zzzz" % len(new_sents))
-            
+
     return sents + new_sents
 
 def augment_move_comma(sents, ratio=0.02):

@@ -125,7 +125,7 @@ def maybe_add_fake_dependencies(lines):
             new_lines.append(line)
             continue
 
-        pieces = line.split("\t")
+        pieces = line.split()
         if MWT_OR_COPY_RE.match(pieces[0]):
             new_lines.append(line)
             continue
@@ -144,7 +144,7 @@ def maybe_add_fake_dependencies(lines):
         else:
             pieces[6] = "1"
             pieces[7] = "dep"
-            new_lines.append("\t".join(pieces))
+            new_lines.append(" ".join(pieces))
     if first_idx is not None:
         if root_idx is None:
             new_lines[first_idx][6] = "0"
@@ -152,7 +152,7 @@ def maybe_add_fake_dependencies(lines):
         else:
             new_lines[first_idx][6] = str(root_idx)
             new_lines[first_idx][7] = "dep"
-        new_lines[first_idx] = "\t".join(new_lines[first_idx])
+        new_lines[first_idx] = " ".join(new_lines[first_idx])
     return new_lines
 
 def write_sentences_to_file(outfile, sents):
@@ -210,7 +210,7 @@ def mostly_underscores(filename):
         if line.startswith("#"):
             continue
         total_count = total_count + 1
-        pieces = line.split("\t")
+        pieces = line.split()
         if pieces[1] in ("_", "-"):
             underscore_count = underscore_count + 1
     return underscore_count / total_count > 0.5
